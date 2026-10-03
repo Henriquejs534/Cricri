@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Sensi + Assistente A</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#0b1018;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+.app{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
+.card{
+  background:#171e29;
+  border:1px solid #303b4c;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:14px;
+}
+h1{margin:0 0 6px}
+h2{font-size:18px}
+.sub{
+  color:#aeb8c8;
+  font-size:13px;
+  line-height:1.5;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+label{
+  font-size:13px;
+  color:#cbd4e2;
+}
+select,input{
+  width:100%;
+  margin-top:6px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #394657;
+  background:#0d131c;
+  color:white;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:9px;
+  border:0;
+  border-radius:11px;
+  background:#303c4f;
+  color:#fff;
+  font-weight:bold;
+}
+.primary{background:#4d7cff}
+.assistente{background:#704ee8}
+.resultado{
+  white-space:pre-wrap;
+  background:#090e15;
+  padding:14px;
+  border-radius:12px;
+  line-height:1.55;
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="card">
+<h1>🎯 Gerador de Sensibilidade</h1>
+<div class="sub">
+Configure seu aparelho e gere uma sugestão de sensibilidade para treino.
+</div>
+</div>
+
+<div class="card">
+
+<h2>📱 Seu celular</h2>
+
+<div class="grid">
+
+<label>
+Marca
+<select id="marca" onchange="atualizarDPI()">
+<option>Xiaomi</option>
+<option>Samsung</option>
+<option>Motorola</option>
+<option>Realme</option>
+<option>Apple</option>
+<option>Outra</option>
+</select>
+</label>
+
+<label>
+Modelo
+<input id="modelo" value="Redmi Note 9S">
+</label>
+
+<label>
+Dedos
+<select id="dedos">
+<option>2 dedos</option>
+<option>3 dedos</option>
+<option>4 dedos</option>
+</select>
+</label>
+
+<label>
+DPI
+<select id="dpi"></select>
+</label>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🎮 Tipo de sensibilidade</h2>
+
+<div class="grid">
+
+<button onclick="gerar('normal')">
+Normal
+</button>
+
+<button onclick="gerar('mediana')">
+Mediana
+</button>
+
+<button onclick="gerar('premium')">
+Premium
+</button>
+
+<button onclick="gerar('playhard')">
+Estilo PlayHard
+</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>⚙️ Ajustes</h2>
+
+<div class="grid">
+
+<label>
+Recoil
+<select id="recoil">
+<option>Baixo</option>
+<option selected>Médio</option>
+<option>Alto</option>
+</select>
+</label>
+
+<label>
+Precisão
+<select id="precisao">
+<option>Baixa</option>
+<option selected>Média</option>
+<option>Alta</option>
+</select>
+</label>
+
+<label>
+Resposta da mira
+<select id="resposta">
+<option>Suave</option>
+<option selected>Rápida</option>
+<option>Muito rápida</option>
+</select>
+</label>
+
+<label>
+Capa
+<select id="capa">
+<option>Normal</option>
+<option>Mais rápida</option>
+<option>Treino de capa</option>
+</select>
+</label>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🤖 Assistente A</h2>
+
+<div class="sub">
+O Assistente A verifica as configurações escolhidas e mostra sugestões de ajuste.
+</div>
+
+<button class="assistente" onclick="assistenteA()">
+✨ Verificar com Assistente A
+</button>
+
+<div id="assistenteResultado" class="resultado" style="margin-top:10px">
+Nenhuma análise realizada.
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>📋 Configuração</h2>
+
+<div id="resultado" class="resultado">
+Escolha um tipo de sensibilidade.
+</div>
+
+<button class="primary" onclick="copiar()">
+📋 Copiar configuração
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>❓ Ajuda</h2>
+
+<div class="sub">
+Escolha primeiro a marca e o modelo do celular.
+Depois selecione uma DPI e um tipo de sensibilidade.
+
+A DPI apresentada é apenas uma sugestão do gerador.
+Ela não altera automaticamente as configurações do Android.
+
+Use o campo de treinamento para testar e ajustar os valores gradualmente.
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const dpiPorMarca = {
+
+Xiaomi:[
+"Sem DPI",
+"20",
+"360",
+"400",
+"420"
+],
+
+Samsung:[
+"Sem DPI",
+"20",
+"360",
+"384",
+"411"
+],
+
+Motorola:[
+"Sem DPI",
+"20",
+"360",
+"400",
+"420"
+],
+
+Realme:[
+"Sem DPI",
+"20",
+"360",
+"400",
+"420"
+],
+
+Apple:[
+"Padrão do sistema"
+],
+
+Outra:[
+"Sem DPI",
+"20",
+"360",
+"400",
+"420"
+]
+
+};
+
+function atualizarDPI(){
+
+const marca =
+document.getElementById("marca").value;
+
+const dpi =
+document.getElementById("dpi");
+
+dpi.innerHTML="";
+
+dpiPorMarca[marca].forEach(valor=>{
+
+const option=document.createElement("option");
+
+option.textContent=valor;
+option.value=valor;
+
+dpi.appendChild(option);
+
+});
+
+}
+
+function limitar(valor){
+
+return Math.max(
+0,
+Math.min(200,Math.round(valor))
+);
+
+}
+
+function gerar(tipo){
+
+let base=125;
+
+if(tipo==="normal") base=145;
+if(tipo==="mediana") base=125;
+if(tipo==="premium") base=165;
+if(tipo==="playhard") base=150;
+
+if(
+document.getElementById("precisao").value==="Alta"
+) base+=8;
+
+if(
+document.getElementById("precisao").value==="Baixa"
+) base-=8;
+
+if(
+document.getElementById("resposta").value==="Muito rápida"
+) base+=8;
+
+if(
+document.getElementById("resposta").value==="Suave"
+) base-=6;
+
+if(
+document.getElementById("recoil").value==="Alto"
+) base-=7;
+
+const config={
+
+"Geral":limitar(base+8),
+
+"Ponto vermelho":limitar(base+3),
+
+"Mira 2x":limitar(base-10),
+
+"Mira 4x":limitar(base-22),
+
+"AWM":limitar(base-35),
+
+"Olhadinha":limitar(base+2)
+
+};
+
+const marca=
+document.getElementById("marca").value;
+
+const modelo=
+document.getElementById("modelo").value;
+
+const dpi=
+document.getElementById("dpi").value;
+
+const dedos=
+document.getElementById("dedos").value;
+
+document.getElementById("resultado").textContent=
+
+`PRESET: ${tipo.toUpperCase()}
+
+Celular: ${marca} ${modelo}
+DPI: ${dpi}
+HUD: ${dedos}
+
+Geral: ${config["Geral"]}
+Ponto vermelho: ${config["Ponto vermelho"]}
+Mira 2x: ${config["Mira 2x"]}
+Mira 4x: ${config["Mira 4x"]}
+AWM: ${config["AWM"]}
+Olhadinha: ${config["Olhadinha"]}
+
+Recoil: ${document.getElementById("recoil").value}
+Precisão: ${document.getElementById("precisao").value}
+Resposta: ${document.getElementById("resposta").value}
+Capa: ${document.getElementById("capa").value}`;
+
+}
+
+function assistenteA(){
+
+const dpi=
+document.getElementById("dpi").value;
+
+const dedos=
+document.getElementById("dedos").value;
+
+const precisao=
+document.getElementById("precisao").value;
+
+const resposta=
+document.getElementById("resposta").value;
+
+let sugestoes=[];
+
+if(dpi==="20"){
+sugestoes.push(
+"• DPI 20 selecionada: teste primeiro no campo de treinamento."
+);
+}
+
+if(precisao==="Baixa"){
+sugestoes.push(
+"• Considere testar precisão média."
+);
+}
+
+if(resposta==="Suave"){
+sugestoes.push(
+"• Se a mira estiver lenta, experimente resposta rápida."
+);
+}
+
+if(dedos==="4 dedos"){
+sugestoes.push(
+"• HUD de 4 dedos permite separar melhor movimento, mira e disparo."
+);
+}
+
+if(sugestoes.length===0){
+sugestoes.push(
+"• Sua configuração está equilibrada para começar os testes."
+);
+}
+
+document.getElementById(
+"assistenteResultado"
+).textContent=
+
+"🤖 ASSISTENTE A\n\n"+
+sugestoes.join("\n")+
+"\n\nAjuste uma variável por vez para descobrir o que funciona melhor no seu aparelho.";
+
+}
+
+async function copiar(){
+
+const texto=
+document.getElementById("resultado").textContent;
+
+try{
+
+await navigator.clipboard.writeText(texto);
+
+alert("Configuração copiada!");
+
+}catch(e){
+
+alert("Não foi possível copiar automaticamente.");
+
+}
+
+}
+
+atualizarDPI();
+
+</script>
+
+</body>
+</html>
